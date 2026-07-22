@@ -1,0 +1,354 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────── 组织域 ─────────────────
+enum Role {
+  LEARNER
+  GROUP_LEADER
+  COACH
+  REVIEW_BOARD
+  CAMP_ADMIN
+  PLATFORM_ADMIN
+}
+
+enum CohortStatus {
+  PLANNING
+  RUNNING
+  CLOSED
+}
+
+enum Persona {
+  OBSERVER
+  PRACTITIONER
+  PIONEER
+}
+
+model User {
+  id          String       @id @default(cuid())
+  empId       String       @unique
+  name        String
+  dept        String
+  gitUsername String?      @unique
+  active      Boolean      @default(true)
+  passwordHash      String?
+  mustChangePassword Boolean @default(true)
+  failedLogins      Int      @default(0)
+  lockedUntil       DateTime?
+  roles       UserRole[]
+  enrollments Enrollment[]
+  createdAt   DateTime     @default(now())
+}
+
+model UserRole {
+  userId String
+  role   Role
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, role])
+}
+
+model Cohort {
+  id          String       @id @default(cuid())
+  name        String
+  startsAt    DateTime
+  weeks       Int          @default(12)
+  status      CohortStatus @default(PLANNING)
+  groups      Group[]
+  enrollments Enrollment[]
+}
+
+model Group {
+  id        String       @id @default(cuid())
+  cohortId  String
+  name      String
+  leaderId  String?
+  cohort    Cohort       @relation(fields: [cohortId], references: [id])
+  members   Enrollment[]
+}
+
+model Enrollment {
+  id              String             @id @default(cuid())
+  userId          String
+  cohortId        String
+  groupId         String
+  persona         Persona?
+  pairWithId      String?
+  user            User               @relation(fields: [userId], references: [id])
+  cohort          Cohort             @relation(fields: [cohortId], references: [id])
+  group           Group              @relation(fields: [groupId], references: [id])
+  attempts        LabAttempt[]
+  reviewsAuthored ReviewAssignment[] @relation("author")
+  reviewsAssigned ReviewAssignment[] @relation("reviewer")
+  assets          AssetContribution[]
+  certAwards      CertAward[]
+  points          PointsLedger[]
+  placement       PlacementResult?
+  @@unique([userId, cohortId])
+}
+
+// ───────────────── 课程域（Git 只读同步）─────────────────
+enum Cert {
+  C1
+  C2
+  C3
+  C4
+}
+
+enum VerifyType {
+  CI
+  LLM
+  HYBRID
+  PEER
+  MANUAL
+}
+
+enum GreenBy {
+  AUTO
+  COACH
+  PEER_TEST
+}
+
+model CurriculumSync {
+  id        String   @id @default(cuid())
+  gitCommit String
+  raw       Json
+  syncedAt  DateTime @default(now())
+}
+
+model Lab {
+  code       String       @id
+  certLevel  Cert
+  module     String
+  title      String
+  domain     Int
+  verifyType VerifyType
+  greenBy    GreenBy      @default(COACH)
+  minutes    Int          @default(30)
+  repoPath   String
+  unlocks    Json
+  active     Boolean      @default(true)
+  attempts   LabAttempt[]
+}
+
+// ───────────────── 过程域 ─────────────────
+enum AttemptStatus {
+  LOCKED
+  UNLOCKED
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
+enum Color {
+  RED
+  YELLOW
+  GREEN
+}
+
+enum GradeSource {
+  CI
+  LLM
+  COACH
+  PEER_TEST
+  SYSTEM
+}
+
+model LabAttempt {
+  id           String            @id @default(cuid())
+  enrollmentId String
+  labCode      String
+  status       AttemptStatus     @default(UNLOCKED)
+  color        Color?
+  isTestOut    Boolean           @default(false)
+  branch       String?
+  mrUrl        String?
+  enrollment   Enrollment        @relation(fields: [enrollmentId], references: [id])
+  lab          Lab               @relation(fields: [labCode], references: [code])
+  events       GradeEvent[]
+  rubricEvals  RubricEvaluation[]
+  updatedAt    DateTime          @updatedAt
+  @@unique([enrollmentId, labCode])
+}
+
+model GradeEvent {
+  id        String      @id @default(cuid())
+  attemptId String
+  source    GradeSource
+  color     Color?
+  score     Float?
+  payload   Json
+  actorId   String?
+  createdAt DateTime    @default(now())
+  attempt   LabAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+}
+
+model RubricEvaluation {
+  id         String     @id @default(cuid())
+  attemptId  String
+  rubricPath String
+  model      String
+  scores     Json
+  preColor   Color
+  sampled    Boolean    @default(false)
+  coachId    String?
+  coachColor Color?
+  dispute    Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  attempt    LabAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+}
+
+enum ArtifactType {
+  SPEC
+  CODE
+  PROJECT
+  SKILL
+}
+
+enum ReviewStatus {
+  PENDING
+  SUBMITTED
+  EXPIRED
+}
+
+model ReviewAssignment {
+  id           String       @id @default(cuid())
+  cohortId     String
+  artifactType ArtifactType
+  artifactRef  String
+  authorId     String
+  reviewerId   String
+  status       ReviewStatus @default(PENDING)
+  formJson     Json?
+  quality      Int?
+  dueAt        DateTime
+  author       Enrollment   @relation("author", fields: [authorId], references: [id])
+  reviewer     Enrollment   @relation("reviewer", fields: [reviewerId], references: [id])
+  createdAt    DateTime     @default(now())
+  @@index([reviewerId, status])
+}
+
+model PeerTest {
+  id             String  @id @default(cuid())
+  skillAttemptId String
+  testerId       String
+  taskRef        String
+  passed         Boolean
+  feedback       String?
+  createdAt      DateTime @default(now())
+}
+
+model ProjectTeam {
+  id          String       @id @default(cuid())
+  cohortId    String
+  projectCode String
+  memberIds   Json
+  finalColor  Color?
+  syncs       WeeklySync[]
+}
+
+model WeeklySync {
+  id       String      @id @default(cuid())
+  teamId   String
+  week     Int
+  notes    String
+  blockers String?
+  team     ProjectTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────── 资产域 ─────────────────
+enum AssetType {
+  SKILL
+  RULE
+  DETECTION
+  SPEC_TEMPLATE
+}
+
+enum AdoptionSource {
+  SKILLHUB_API
+  MANUAL
+}
+
+model AssetContribution {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  type         AssetType
+  name         String
+  skillHubRef  String?
+  approvedAt   DateTime?
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+  adoptions    Adoption[]
+}
+
+model Adoption {
+  id            String            @id @default(cuid())
+  assetId       String
+  adopterDept   String
+  source        AdoptionSource
+  evidence      String?
+  confirmedById String?
+  createdAt     DateTime          @default(now())
+  asset         AssetContribution @relation(fields: [assetId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────── 激励与治理 ─────────────────
+model CertRule {
+  certLevel  Cert @id
+  conditions Json
+}
+
+model CertAward {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  level        Cert
+  awardedAt    DateTime   @default(now())
+  evidence     Json
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+  @@unique([enrollmentId, level])
+}
+
+model PointsLedger {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  delta        Int
+  reason       String
+  refType      String?
+  refId        String?
+  createdAt    DateTime   @default(now())
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+}
+
+model ToolRegistry {
+  dept        String  @id
+  defaultTool String
+  quirks      String?
+}
+
+model PlacementResult {
+  enrollmentId String     @id
+  t1           Int
+  t2           Int
+  t3           Int
+  persona      Persona
+  exemptions   Json
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+}
+
+model AuditLog {
+  id      String   @id @default(cuid())
+  actorId String
+  action  String
+  target  String
+  diff    Json?
+  at      DateTime @default(now())
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

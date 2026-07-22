@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: camp
+      POSTGRES_PASSWORD: camp
+      POSTGRES_DB: camp
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    ports: ["5432:5432"]
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6379:6379"]
+  web:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://camp:camp@db:5432/camp
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ../landing-zone-camp:/opt/ai-coding-camp/landing-zone-camp
+    ports: ["3000:3000"]
+    depends_on: [db, redis]
+  worker:
+    build: .
+    command: ["npx", "tsx", "worker/index.ts"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://camp:camp@db:5432/camp
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ../landing-zone-camp:/opt/ai-coding-camp/landing-zone-camp:ro
+    depends_on: [db, redis]
+volumes:
+  pgdata: {}

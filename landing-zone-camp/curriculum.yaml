@@ -1,0 +1,54 @@
+# AI Coding Camp 关卡地图（课程即代码 —— 本文件是平台同步的唯一来源）
+# verify: ci | llm | hybrid | peer | manual   green_by: auto | coach | peer_test
+version: 1
+certs:
+  - code: C1
+    name: AI 协作开发者（白带）
+    graduation: { labs: all_yellow, micro_project: true, tool_registered: true }
+    labs:
+      - { code: c1-00, title: "hello, camp：环境准备与第一次提交", module: M1, domain: 1, verify: ci, minutes: 15, unlocks: [], repo_path: labs/c1-00-hello-camp }
+      - { code: c1-01, title: 部门默认工具安装与配置校验, module: M1, domain: 1,  verify: ci, minutes: 20, unlocks: [c1-00], repo_path: labs/c1-01-env-setup }
+      - { code: c1-02, title: Rules 与 Skill 加载验证,     module: M1, domain: 2,  verify: ci, minutes: 20, unlocks: [c1-01], repo_path: labs/c1-02-rules-loading }
+      - { code: c1-03, title: 给项目写 AGENTS.md,          module: M2, domain: 2,  verify: ci, minutes: 30, unlocks: [c1-02], repo_path: labs/c1-03-agents-md }
+      - { code: c1-04, title: context-map 匹配实验,        module: M2, domain: 2,  verify: ci, minutes: 25, unlocks: [c1-02], repo_path: labs/c1-04-context-map }
+      - { code: c1-05, title: L0/L1 分级判断 10 题,        module: M3, domain: 3,  verify: ci, minutes: 15, unlocks: [c1-02], repo_path: labs/c1-05-spec-level-quiz }
+      - { code: c1-06, title: 用 EARS 写 Quick Spec,       module: M3, domain: 3,  verify: hybrid, minutes: 25, unlocks: [c1-05], repo_path: labs/c1-06-ears-quick-spec }
+      - { code: c1-07, title: 从 Quick Spec 生成代码并跑通测试, module: M4, domain: 5, verify: ci, minutes: 30, unlocks: [c1-06], repo_path: labs/c1-07-spec-to-code }
+      - { code: c1-08, title: 幻觉初识：找出埋下的 2 处幻觉, module: M4, domain: 9,  verify: ci, minutes: 25, unlocks: [c1-07], repo_path: labs/c1-08-hallucination-hunt }
+      - { code: c1-09, title: Secret 泄漏体验与拦截,       module: M4, domain: 8,  verify: ci, minutes: 20, unlocks: [c1-02], repo_path: labs/c1-09-secret-scan }
+      - { code: c1-10, title: 第一个合规 PR,               module: M4, domain: 5,  verify: ci, minutes: 30, unlocks: [c1-07, c1-09], repo_path: labs/c1-10-first-pr }
+
+  - code: C2
+    name: 规范开发者（黄带）
+    graduation: { labs: all_yellow, project: { code: P1, min: YELLOW }, reviews_given: { gte: 2 } }
+    labs:
+      - { code: c2-01, title: Spec 决策树 20 题速判,       module: M5, domain: 3,  verify: ci, minutes: 20, unlocks: [c1-05], repo_path: labs/c2-01-decision-tree-quiz }
+      - { code: c2-02, title: 写一份 L2 标准 Spec,         module: M5, domain: 3,  verify: hybrid, minutes: 45, unlocks: [c2-01], repo_path: labs/c2-02-write-l2-spec }
+      - { code: c2-03, title: 「禁止越级」陷阱题,          module: M5, domain: 3,  verify: ci, minutes: 20, unlocks: [c2-02], repo_path: labs/c2-03-refactor-trap }
+      - { code: c2-04, title: 给坏 Spec 挑刺（8 处缺陷）,  module: M6, domain: 4,  verify: hybrid, minutes: 30, unlocks: [c2-02], repo_path: labs/c2-04-bad-spec-review }
+      - { code: c2-05, title: Review Checklist 跨组互评,   module: M6, domain: 4,  verify: peer, minutes: 40, unlocks: [c2-04], repo_path: labs/c2-05-peer-spec-review }
+      - { code: c2-06, title: 四维审查实战（安全/正确/性能/可维护）, module: M7, domain: 6, verify: ci, minutes: 40, unlocks: [c1-10], repo_path: labs/c2-06-four-dim-review }
+      - { code: c2-07, title: 换个模型再审：终止条件实践,  module: M7, domain: 6,  verify: ci, minutes: 30, unlocks: [c2-06], repo_path: labs/c2-07-model-switch-termination }
+      - { code: c2-08, title: 从验收条件生成测试用例,      module: M8, domain: 7,  verify: ci, minutes: 35, unlocks: [c2-02], repo_path: labs/c2-08-ac-to-tests }
+      - { code: c2-09, title: Bugfix 三层描述法实战,       module: M8, domain: 7,  verify: ci, minutes: 40, unlocks: [c2-08], repo_path: labs/c2-09-bugfix-three-layer }
+      - { code: c2-10, title: 安全基线：漏洞依赖与不安全用法修复, module: M9, domain: 8, verify: ci, minutes: 30, unlocks: [c1-09], repo_path: labs/c2-10-security-baseline }
+
+  - code: C3
+    name: 资产工程师（绿带）
+    graduation: { labs: all_yellow, project: { code: P2, min: YELLOW }, adoptions: { gte: 1 } }
+    labs:
+      - { code: c3-01, title: 解剖一个好 Skill,            module: M10, domain: 10, verify: ci, minutes: 25, unlocks: [c2-02], repo_path: labs/c3-01-skill-anatomy }
+      - { code: c3-02, title: 你的第一个 Skill（互测定绿）, module: M10, domain: 10, verify: hybrid, green_by: peer_test, minutes: 45, unlocks: [c3-01], repo_path: labs/c3-02-first-skill }
+      - { code: c3-03, title: SkillHub 全流程走通,          module: M11, domain: 11, verify: manual, minutes: 30, unlocks: [c3-02], repo_path: labs/c3-03-skillhub-flow }
+      - { code: c3-04, title: 资产淘汰演习（10 个去留判定）, module: M11, domain: 11, verify: ci, minutes: 30, unlocks: [c3-03], repo_path: labs/c3-04-asset-retirement }
+      - { code: c3-05, title: MCP 接入企业文档并可溯源引用,  module: M12, domain: 12, verify: ci, minutes: 35, unlocks: [c1-04], repo_path: labs/c3-05-mcp-company-docs }
+      - { code: c3-06, title: MCP 权限与工具白名单配置,     module: M12, domain: 12, verify: ci, minutes: 20, unlocks: [c3-05], repo_path: labs/c3-06-mcp-policy }
+      - { code: c3-07, title: RepoWiki：为遗留系统构建上下文, module: M13, domain: 12, verify: ci, minutes: 40, unlocks: [c2-06], repo_path: labs/c3-07-repowiki }
+      - { code: c3-08, title: 遗留代码：先补测试再重构,     module: M13, domain: 7,  verify: ci, minutes: 45, unlocks: [c3-07], repo_path: labs/c3-08-legacy-tests-refactor }
+      - { code: c3-09, title: 四阶段工作流完整走一遍, module: M14, domain: 5,  verify: ci, minutes: 45, unlocks: [c2-09], repo_path: labs/c3-09-superpowers-e2e }
+      - { code: c3-10, title: 需求单到发布单全链路演练,     module: M14, domain: 13, verify: ci, minutes: 45, unlocks: [c3-09], repo_path: labs/c3-10-full-sdlc }
+
+  - code: C4
+    name: 工程教练（黑带）
+    graduation: { project: { code: P3, min: YELLOW }, baseline_report: true }
+    labs: []   # C4 为模块制（见 c4-modules/），带教项目 P3 见 projects/

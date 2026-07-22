@@ -1,0 +1,35 @@
+# 依赖
+node_modules/
+
+# 构建产物
+.next/
+out/
+dist/
+
+# 环境变量(含真实密码/token,绝不提交)
+.env
+.env.local
+.env*.local
+
+# 教练答案基准(开营前移入私有仓库,绝不公开)
+landing-zone-camp/rubrics/coach-keys.md
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志
+*.log
+npm-debug.log*
+
+# Prisma 生成(可重新生成)
+camp-platform/node_modules/.prisma/
+
+# 临时文件
+*.tmp

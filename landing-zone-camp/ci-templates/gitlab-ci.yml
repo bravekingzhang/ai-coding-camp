@@ -1,0 +1,23 @@
+# 训练仓库根目录的 .gitlab-ci.yml —— 分支 camp/<lab>/<empId> 触发对应关卡判题
+stages: [verify, report]
+
+variables:
+  CAMP_API: "http://camp-platform.internal:3000"   # 平台地址
+  # CAMP_CI_TOKEN 配置在 GitLab CI/CD Variables（Masked），与平台 .env 的 CI_SHARED_TOKEN 一致
+
+verify:
+  stage: verify
+  image: python:3.11-slim   # 内网镜像；含 python3/sh/git，足够跑所有 verify.sh
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^camp\/c[0-9]-[0-9]+[a-z0-9-]*\/.+$/'
+  script:
+    - LAB=$(echo "$CI_COMMIT_BRANCH" | cut -d/ -f2)
+    - EMP=$(echo "$CI_COMMIT_BRANCH" | cut -d/ -f3)
+    - LABDIR=$(ls -d labs/${LAB}-* 2>/dev/null | head -1)
+    - echo "关卡 $LAB → $LABDIR（学员 $EMP）"
+    - cd "$LABDIR" && sh .verify/verify.sh; RESULT=$?
+    - cd "$CI_PROJECT_DIR"
+    - if [ "$RESULT" = "0" ]; then COLOR=yellow; else COLOR=red; fi
+    - >
+      sh ci-templates/callback.sh "$LAB" "$EMP" "$COLOR" "$CI_COMMIT_SHORT_SHA" "$CI_PIPELINE_URL"
+    - exit $RESULT

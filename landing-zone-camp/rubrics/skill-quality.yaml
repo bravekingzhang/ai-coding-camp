@@ -1,0 +1,10 @@
+# Skill 质量评分（c3-02 / P2 · 满分 10；🟢 由互测决定，本 rubric 只到 YELLOW）
+name: skill-quality
+items:
+  - { key: frontmatter,   desc: 五字段齐全且 description 一句话说清何时用, max: 1.5 }
+  - { key: trigger,       desc: 触发时机具体（症状级而非"遇到性能问题"）,  max: 1.5 }
+  - { key: steps_exec,    desc: 步骤可执行（含命令/SQL/判定阈值）,         max: 3.0 }
+  - { key: antipattern,   desc: 反例真实（新手最容易走的弯路）,            max: 1.5 }
+  - { key: boundary,      desc: 边界与转介明确（何时不适用、转给谁）,      max: 1.5 }
+  - { key: maintenance,   desc: 维护信息（验证日期/适配版本）,             max: 1.0 }
+peer_test_pass: 互测者未追问作者即完成任务，且反馈可复用

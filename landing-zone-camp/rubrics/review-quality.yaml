@@ -1,0 +1,17 @@
+# 评审意见质量评分（用于 c2-04 预评与教练抽评学员的跨组评审 · 满分 10）
+name: review-quality
+items:
+  - { key: hit_rate,      desc: 命中预埋/真实缺陷的比例（c2-04 按 8 处缺陷清单比对）, max: 4.0 }
+  - { key: severity,      desc: 按危害排序而非流水账（先安全/正确性）,               max: 2.0 }
+  - { key: actionable,    desc: 每条给出可执行改法而不止指出问题,                    max: 2.0 }
+  - { key: no_noise,      desc: 无风格洁癖式噪音、无误伤正常写法,                    max: 1.0 }
+  - { key: tone,          desc: 对事不对人、引用具体位置,                            max: 1.0 }
+c2_04_defect_checklist:
+  - 缺陷1 正常流AC"尽快/体验好"不可测
+  - 缺陷2 正常流AC"友好、准确"不可测
+  - 缺陷3 第三方通道失败异常流缺失
+  - 缺陷4 用户关闭通知开关异常流缺失
+  - 缺陷5 幂等空缺（重复触发重复发）
+  - 缺陷6 全文无回滚方案
+  - 缺陷7 影响范围含糊且漏 notify_log 新表
+  - 缺陷8 返回体违反 code/message/data 约定

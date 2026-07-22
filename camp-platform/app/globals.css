@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-slate-50 text-slate-800; }
+.md-body h1 { @apply text-2xl font-bold mt-6 mb-3; }
+.md-body h2 { @apply text-xl font-semibold mt-5 mb-2; }
+.md-body h3 { @apply text-lg font-semibold mt-4 mb-2; }
+.md-body p  { @apply my-2 leading-7; }
+.md-body ul { @apply list-disc pl-6 my-2; }
+.md-body ol { @apply list-decimal pl-6 my-2; }
+.md-body pre { @apply bg-slate-900 text-slate-100 rounded-lg p-4 my-3 overflow-x-auto text-sm; }
+.md-body code { @apply text-sm; }
+.md-body table { @apply w-full my-3 text-sm border-collapse; }
+.md-body th, .md-body td { @apply border border-slate-300 px-2 py-1 text-left; }
+.md-body blockquote { @apply border-l-4 border-amber-400 bg-amber-50 px-3 py-2 my-3; }

@@ -1,0 +1,18 @@
+# L2 Spec 质量评分（LLM 预评用 · 满分 10）
+# 判色：>=9 GREEN（仍需教练复核）；>=7 YELLOW；任一 gate 项为 0 直接 RED
+name: spec-quality
+gates: [ac_testable_normal, ac_exceptions]
+items:
+  - { key: background_clear,      desc: 背景与问题清晰（为什么做）,               max: 1.0 }
+  - { key: user_story,            desc: 用户故事完整（角色/功能/价值）,           max: 1.0 }
+  - { key: ac_testable_normal,    desc: 正常流 AC 全部可测（EARS、无形容词验收）, max: 1.5 }
+  - { key: ac_exceptions,         desc: 异常流覆盖（失败/降级/权限）,             max: 1.5 }
+  - { key: ac_boundary,           desc: 边界条件（空值/上限/并发/时间边界）,      max: 1.0 }
+  - { key: non_functional,        desc: 非功能需求填写（性能/安全/幂等有具体值）, max: 1.0 }
+  - { key: impact_scope,          desc: 影响范围与依赖明确（文件/服务/上下游）,   max: 1.0 }
+  - { key: db_api_declared,       desc: DB 与 API 变更如实声明,                   max: 1.0 }
+  - { key: rollback,              desc: 回滚已考虑（开关/降级路径）,              max: 0.5 }
+  - { key: convention_conflict,   desc: 与现有约定无冲突（返回体三段式等）,       max: 0.5 }
+prompt_hint: >
+  你是 Spec 评审员。逐项打分并给一句理由；"通知要快/体验好"这类不可测表述在 ac_testable_normal 记 0。
+  输出 JSON: {"score": 总分, "items": [{"key":..., "got":..., "reason":...}]}

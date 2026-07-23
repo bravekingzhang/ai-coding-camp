@@ -24,7 +24,7 @@ services:
     depends_on: [db, redis]
   worker:
     build: .
-    command: ["npx", "tsx", "worker/index.ts"]
+    command: ["node", "node_modules/tsx/dist/cli.mjs", "worker/index.ts"]
     env_file: .env
     environment:
       DATABASE_URL: postgresql://camp:camp@db:5432/camp

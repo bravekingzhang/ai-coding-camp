@@ -33,3 +33,4 @@ camp-platform/node_modules/.prisma/
 
 # 临时文件
 *.tmp
+tsconfig.tsbuildinfo

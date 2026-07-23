@@ -12,10 +12,20 @@
 **第 1 步：拿到仓库访问权限**
 找营长或组长开通训练仓库的访问权限（push 权限）。仓库地址在平台「新手引导」页。
 
-**第 2 步：克隆仓库到本地**
+**第 2 步：获取仓库代码到本地**
+
+标准方式（大多数平台适用）：
 ```sh
 git clone <训练仓库地址>
 cd <仓库目录>          # 即 landing-zone-camp 所在的仓库根目录
+```
+
+如果 clone 报"空仓库"（部分 Gerrit 环境会这样），用 fetch 代替：
+```sh
+mkdir camp && cd camp
+git init
+git fetch <训练仓库地址> main
+git checkout FETCH_HEAD -- .
 ```
 
 **第 3 步：配置你的 git 身份**（每个仓库只需配一次）

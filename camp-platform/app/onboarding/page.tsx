@@ -21,9 +21,9 @@ export default async function OnboardingPage() {
 
   const steps = [
     {
-      title: '1. 克隆训练仓库',
-      cmd: `git clone ${repoDisplay}\ncd <仓库目录>`,
-      note: '仓库地址需替换为实际地址。所有学员 clone 同一个共享仓库。',
+      title: '1. 获取训练仓库代码',
+      cmd: `# 方式一：标准 clone（大多数平台适用）\ngit clone ${repoDisplay}\ncd <仓库目录>\n\n# 方式二：若 clone 报空仓库（部分 Gerrit 环境），用 fetch 代替：\nmkdir camp && cd camp\ngit init\ngit fetch ${repoDisplay} main\ngit checkout FETCH_HEAD -- .`,
+      note: '所有学员获取同一个共享仓库的代码。仓库地址见上方。',
     },
     {
       title: '2. 配置 git 身份',

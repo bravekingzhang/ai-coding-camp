@@ -1,10 +1,19 @@
 #!/bin/sh
 # 用法: check-answers.sh <学员答案文件> <标准答案sha256>
 # 归一化: 去空格 → 转大写 → 仅保留 "N:Lx" 行 → 按题号排序
+# 平台兼容: macOS 无 sha256sum，用 shasum -a 256 兜底
 set -e
 FILE="$1"; EXPECT="$2"
 [ -f "$FILE" ] || { echo "❌ 未找到答案文件 $FILE"; exit 1; }
-GOT=$(tr -d ' \t\r' < "$FILE" | tr 'a-z' 'A-Z' | grep -E '^[0-9]+:L[0-9]$' | sort -t: -k1,1n | sha256sum | cut -d' ' -f1)
+
+# 优先用 sha256sum(GNU)，没有则回退 shasum -a 256(BSD/macOS)
+if command -v sha256sum >/dev/null 2>&1; then
+  HASH_CMD="sha256sum"
+else
+  HASH_CMD="shasum -a 256"
+fi
+
+GOT=$(tr -d ' \t\r' < "$FILE" | tr 'a-z' 'A-Z' | grep -E '^[0-9]+:L[0-9]$' | sort -t: -k1,1n | $HASH_CMD | cut -d' ' -f1)
 if [ "$GOT" = "$EXPECT" ]; then
   echo "✅ 全部正确"
 else
